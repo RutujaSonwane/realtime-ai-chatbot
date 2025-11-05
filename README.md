@@ -1,5 +1,8 @@
 📡 Realtime AI Chatbot
+
 A professional, real-time streaming AI assistant built with Next.js, Tailwind CSS, and Node.js, featuring markdown rendering, dark mode, and interactive controls like regenerate and stop. Designed for seamless user experience and scalable deployment.
+
+demo link:- https://youtu.be/ga4uiLLIAUQ
 
 
 🚀 Features
