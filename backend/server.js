@@ -1,0 +1,44 @@
+import express from "express";
+import { WebSocketServer } from "ws";
+import dotenv from "dotenv";
+import Groq from "groq-sdk";
+import cors from "cors";
+
+dotenv.config();
+
+const app = express();
+app.use(cors());
+const PORT = 8000;
+
+const server = app.listen(PORT, () =>
+  console.log(`✅ Backend running at http://localhost:${PORT}`)
+);
+
+const wss = new WebSocketServer({ server });
+const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+
+wss.on("connection", (ws) => {
+  console.log("🟢 Client connected via WebSocket");
+
+  ws.on("message", async (message) => {
+    console.log("User:", message.toString());
+
+    try {
+      const response = await groq.chat.completions.create({
+        model: "llama-3.1-8b-instant",
+        messages: [{ role: "user", content: message.toString() }],
+        stream: true,
+      });
+
+      for await (const chunk of response) {
+        const token = chunk.choices?.[0]?.delta?.content || "";
+        if (token) ws.send(token);
+      }
+    } catch (err) {
+      console.error("Error:", err);
+      ws.send("⚠️ Something went wrong. Please try again."(/\\n/g,'\n'));
+    }
+  });
+
+  ws.on("close", () => console.log("🔴 Client disconnected"));
+});
