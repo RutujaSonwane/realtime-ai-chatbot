@@ -3,12 +3,23 @@ import { WebSocketServer } from "ws";
 import dotenv from "dotenv";
 import Groq from "groq-sdk";
 import cors from "cors";
+import path from "path";
 
 dotenv.config();
 
 const app = express();
 app.use(cors());
-const PORT = 8000;
+const PORT = process.env.PORT || 8000;
+
+// -------------------- Serve frontend --------------------
+const __dirname = path.resolve();
+app.use(express.static(path.join(__dirname, "../frontend")));
+
+// For any unknown route, serve index.html
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "../frontend", "index.html"));
+});
+// -------------------------------------------------------
 
 const server = app.listen(PORT, () =>
   console.log(`✅ Backend running at http://localhost:${PORT}`)
@@ -36,7 +47,7 @@ wss.on("connection", (ws) => {
       }
     } catch (err) {
       console.error("Error:", err);
-      ws.send("⚠️ Something went wrong. Please try again."(/\\n/g,'\n'));
+      ws.send("⚠️ Something went wrong. Please try again.\n");
     }
   });
 

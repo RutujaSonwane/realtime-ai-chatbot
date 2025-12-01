@@ -29,4 +29,5 @@ npm install
 npm run dev
 - Backend:
 cd server
-npm run dev Or npm start
+npm start
+
